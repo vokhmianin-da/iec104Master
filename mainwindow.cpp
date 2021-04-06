@@ -1,13 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-Ui::MainWindow *ptr;
+MainWindow *ptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    ptr = ui;
+    ptr = this;
     ui->setupUi(this);
 }
 
@@ -18,6 +18,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
 {
+    /*Запись значений порта и IP в переменные объекта соединения*/
+    portIEC104 = port;
+    ipIEC104 = ip;
     /*Управление кнопками*/
     ui->pbConnect->setEnabled(false);
     ui->pbDisconnect->setEnabled(true);
@@ -32,7 +35,7 @@ void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
     CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
     CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
 
-    if (CS104_Connection_connect(con))
+    if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
     {
         ui->textEdit->append("Connected!");
         CS104_Connection_sendStartDT(con);
@@ -76,14 +79,14 @@ void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отпра
         if(row == 0)    //Для BitString
         {
 
-            InformationObject sc = (InformationObject)  Bitstring32Command_create(NULL, 1, ptr->tableWidget->item(0, 1)->text().toUInt());
+            InformationObject sc = (InformationObject)  Bitstring32Command_create(NULL, 1, ptr->ui->tableWidget->item(0, 1)->text().toUInt());
             CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
             InformationObject_destroy(sc);
         }
         if(row == 1)    //Для Word
         {
 
-            InformationObject sc = (InformationObject)  SetpointCommandScaled_create(NULL, 3, ptr->tableWidget->item(1, 1)->text().toInt(), false, 0);
+            InformationObject sc = (InformationObject)  SetpointCommandScaled_create(NULL, 3, ptr->ui->tableWidget->item(1, 1)->text().toInt(), false, 0);
             CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
             InformationObject_destroy(sc);
         }

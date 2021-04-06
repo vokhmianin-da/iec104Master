@@ -34,6 +34,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     CS104_Connection con;   //соединение IEC104Master
+    QString ipIEC104;
+    uint16_t portIEC104;
 
     static void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
     static bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
