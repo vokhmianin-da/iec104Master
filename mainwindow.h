@@ -29,6 +29,8 @@ private slots:
 
     void on_pbDisconnect_clicked();
 
+    void on_tableWidget_cellChanged(int row, int column);
+
 private:
     Ui::MainWindow *ui;
     CS104_Connection con;   //соединение IEC104Master
