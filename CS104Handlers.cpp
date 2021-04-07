@@ -11,7 +11,7 @@ void connectionHandler(void *parameter, CS104_Connection connection, CS104_Conne
             printf("Connection established\n");
             break;
         case CS104_CONNECTION_CLOSED:
-            emit ptr->ui->pbConnect->clicked();
+            //emit ptr->ui->pbConnect->clicked();
             break;
         case CS104_CONNECTION_STARTDT_CON_RECEIVED:
             printf("Received STARTDT_CON\n");

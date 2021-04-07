@@ -18,8 +18,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
 {
-    do
-    {
+//    do
+//    {
         /*Запись значений порта и IP в переменные объекта соединения*/
         portIEC104 = port;
         ipIEC104 = ip;
@@ -27,43 +27,43 @@ void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
         ui->pbConnect->setEnabled(false);
         ui->pbDisconnect->setEnabled(true);
         /*Для многопоточности*/
-//        con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
-
-//        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
-//        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
-
-//        ConnectThread *myThread = new ConnectThread(ipIEC104 = ip, portIEC104, con);
-//        connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
-
-//        myThread->start();
-///////////////////////////////////////////////////////////////////
-        QString temp;
-        temp = "Connecting to: %1:%2";
-        temp = temp.arg(ip).arg(port);
-        ui->textEdit->append(temp);
-
-        con = CS104_Connection_create(ip.toStdString().c_str(), port);
+        con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
 
         CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
         CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
 
-        if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
-        {
-            ui->textEdit->append("Connected!");
-            CS104_Connection_sendStartDT(con);
-            CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
+        ConnectThread *myThread = new ConnectThread(ipIEC104 = ip, portIEC104, con);
+        connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
 
-            struct sCP56Time2a testTimestamp;
-            CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
-            CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
-            ui->textEdit->append("Wait ...");
-            break;
-        }
-        else
-        {
-            ui->textEdit->append("Connect failed!");
-        }
-    } while (1);
+        myThread->start();
+///////////////////////////////////////////////////////////////////
+//        QString temp;
+//        temp = "Connecting to: %1:%2";
+//        temp = temp.arg(ip).arg(port);
+//        ui->textEdit->append(temp);
+
+//        con = CS104_Connection_create(ip.toStdString().c_str(), port);
+
+//        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
+//        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
+
+//        if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
+//        {
+//            ui->textEdit->append("Connected!");
+//            CS104_Connection_sendStartDT(con);
+//            CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
+
+//            struct sCP56Time2a testTimestamp;
+//            CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
+//            CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
+//            ui->textEdit->append("Wait ...");
+//            break;
+//        }
+//        else
+//        {
+//            ui->textEdit->append("Connect failed!");
+//        }
+//    } while (1);
 
     //Thread_sleep(1000);
 
