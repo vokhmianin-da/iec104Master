@@ -18,36 +18,42 @@ MainWindow::~MainWindow()
 
 void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
 {
-    /*Запись значений порта и IP в переменные объекта соединения*/
-    portIEC104 = port;
-    ipIEC104 = ip;
-    /*Управление кнопками*/
-    ui->pbConnect->setEnabled(false);
-    ui->pbDisconnect->setEnabled(true);
-
-    QString temp;
-    temp = "Connecting to: %1:%2";
-    temp = temp.arg(ip).arg(port);
-    ui->textEdit->append(temp);
-
-    con = CS104_Connection_create(ip.toStdString().c_str(), port);
-
-    CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
-    CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
-
-    if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
+    do
     {
-        ui->textEdit->append("Connected!");
-        CS104_Connection_sendStartDT(con);
-        CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
+        /*Запись значений порта и IP в переменные объекта соединения*/
+        portIEC104 = port;
+        ipIEC104 = ip;
+        /*Управление кнопками*/
+        ui->pbConnect->setEnabled(false);
+        ui->pbDisconnect->setEnabled(true);
 
-        struct sCP56Time2a testTimestamp;
-        CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
-        CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
-        ui->textEdit->append("Wait ...");
-    }
-    else
-        ui->textEdit->append("Connect failed!");
+        QString temp;
+        temp = "Connecting to: %1:%2";
+        temp = temp.arg(ip).arg(port);
+        ui->textEdit->append(temp);
+
+        con = CS104_Connection_create(ip.toStdString().c_str(), port);
+
+        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
+        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
+
+        if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
+        {
+            ui->textEdit->append("Connected!");
+            CS104_Connection_sendStartDT(con);
+            CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
+
+            struct sCP56Time2a testTimestamp;
+            CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
+            CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
+            ui->textEdit->append("Wait ...");
+            break;
+        }
+        else
+        {
+            ui->textEdit->append("Connect failed!");
+        }
+    } while (1);
 
     //Thread_sleep(1000);
 

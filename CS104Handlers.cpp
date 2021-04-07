@@ -10,8 +10,7 @@ void MainWindow::connectionHandler(void *parameter, CS104_Connection connection,
             printf("Connection established\n");
             break;
         case CS104_CONNECTION_CLOSED:
-            printf("Connection closed\n");
-            ptr->setConnectionIEC104Master(ptr->ipIEC104, ptr->portIEC104); //для автоматического повторного соединения
+            emit ptr->ui->pbConnect->clicked();
             break;
         case CS104_CONNECTION_STARTDT_CON_RECEIVED:
             printf("Received STARTDT_CON\n");
