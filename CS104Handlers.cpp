@@ -1,9 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "CS104Handlers.h"
 
 extern MainWindow *ptr;
 
-void MainWindow::connectionHandler(void *parameter, CS104_Connection connection, CS104_ConnectionEvent event)
+void connectionHandler(void *parameter, CS104_Connection connection, CS104_ConnectionEvent event)
 {
     switch (event) {
         case CS104_CONNECTION_OPENED:
@@ -21,7 +22,7 @@ void MainWindow::connectionHandler(void *parameter, CS104_Connection connection,
     }
 }
 
-bool MainWindow::asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //прием данных
+bool asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //прием данных
 {
         if (CS101_ASDU_getTypeID(asdu) == M_ME_TE_1) {  //число тип 35
 

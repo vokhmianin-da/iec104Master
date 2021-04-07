@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ptr = this;
-    ui->setupUi(this);
+    ui->setupUi(this);    
 }
 
 MainWindow::~MainWindow()
@@ -26,7 +26,17 @@ void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
         /*Управление кнопками*/
         ui->pbConnect->setEnabled(false);
         ui->pbDisconnect->setEnabled(true);
+        /*Для многопоточности*/
+//        con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
 
+//        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
+//        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
+
+//        ConnectThread *myThread = new ConnectThread(ipIEC104 = ip, portIEC104, con);
+//        connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
+
+//        myThread->start();
+///////////////////////////////////////////////////////////////////
         QString temp;
         temp = "Connecting to: %1:%2";
         temp = temp.arg(ip).arg(port);
@@ -97,4 +107,9 @@ void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отпра
             InformationObject_destroy(sc);
         }
     }
+}
+
+void MainWindow::on_setTextStatus(QString str)
+{
+    ui->textEdit->append(str);
 }

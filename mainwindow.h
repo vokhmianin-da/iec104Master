@@ -11,6 +11,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "CS104Handlers.h"
+#include "connectthread.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -31,13 +34,15 @@ private slots:
 
     void on_tableWidget_cellChanged(int row, int column);
 
+    void on_setTextStatus(QString str);
+
 private:
     Ui::MainWindow *ui;
     CS104_Connection con;   //соединение IEC104Master
     QString ipIEC104;
     uint16_t portIEC104;
 
-    static void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
-    static bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
+    friend void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
+    friend bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
 };
 #endif // MAINWINDOW_H
