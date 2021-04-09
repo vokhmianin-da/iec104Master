@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <QVariant>
 
 #include "iec60870/cs104_connection.h"
 #include "iec60870/hal_time.h"
@@ -27,6 +28,10 @@ public:
     ~MainWindow();
     void setConnectionIEC104Master(QString ip, uint16_t port);  //создание соединения от мастера
 
+    friend void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
+    friend bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
+
+
 private slots:
     void on_pbConnect_clicked();
 
@@ -38,11 +43,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    CS104_Connection con;   //соединение IEC104Master
     QString ipIEC104;
     uint16_t portIEC104;
 
-    friend void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
-    friend bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
+signals:
+    void sendCom(int, int, QVariant);
 };
 #endif // MAINWINDOW_H

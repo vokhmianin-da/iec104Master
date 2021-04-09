@@ -27,13 +27,14 @@ void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
         ui->pbConnect->setEnabled(false);
         ui->pbDisconnect->setEnabled(true);
         /*Для многопоточности*/
-        con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
+//        con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
 
-        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
-        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
+//        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
+//        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
 
-        ConnectThread *myThread = new ConnectThread(ipIEC104 = ip, portIEC104, con);
+        ConnectThread *myThread = new ConnectThread(ipIEC104, portIEC104);
         connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
+        connect(this, SIGNAL(sendCom(int, int, QVariant)), myThread, SLOT(sendCommand(int, int, QVariant)));
 
         myThread->start();
 ///////////////////////////////////////////////////////////////////
@@ -83,9 +84,9 @@ void MainWindow::on_pbDisconnect_clicked()  //кнопка "Disconnect"
     ui->pbConnect->setEnabled(true);
     ui->pbDisconnect->setEnabled(false);
 
-    /*Закрытие соединения*/
-    CS104_Connection_destroy(con);
-    ui->textEdit->append("exit");
+//    /*Закрытие соединения*/
+//    CS104_Connection_destroy(con);
+//    ui->textEdit->append("exit");
 }
 
 void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отправка команды по изменению значения в таблице
@@ -94,17 +95,11 @@ void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отпра
     {
         if(row == 0)    //Для BitString
         {
-
-            InformationObject sc = (InformationObject)  Bitstring32Command_create(NULL, 1, ptr->ui->tableWidget->item(0, 1)->text().toUInt());
-            CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
-            InformationObject_destroy(sc);
+            emit sendCom(row, column, ui->tableWidget->item(0, 1)->text().toUInt());
         }
         if(row == 1)    //Для Word
         {
-
-            InformationObject sc = (InformationObject)  SetpointCommandScaled_create(NULL, 3, ptr->ui->tableWidget->item(1, 1)->text().toInt(), false, 0);
-            CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
-            InformationObject_destroy(sc);
+            emit sendCom(row, column, ui->tableWidget->item(1, 1)->text().toInt());
         }
     }
 }

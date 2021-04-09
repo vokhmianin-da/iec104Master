@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QObject>
+#include <QVariant>
 #include "mainwindow.h"
 
 class ConnectThread : public QThread
@@ -15,10 +16,15 @@ private:
     CS104_Connection con;   //соединение IEC104Master
 
 public:
-    ConnectThread(QString ip, uint16_t port, CS104_Connection con);
+    ConnectThread(QString ip, uint16_t port);
+    friend void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
+    friend bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
 
 signals:
     void setTextStatus(QString);    //сигнал для записи статуса соединения
+
+private slots:
+    void sendCommand(int row, int column, QVariant val);
 
 protected:
     void run() override;

@@ -1,8 +1,27 @@
 #include "connectthread.h"
 
-ConnectThread::ConnectThread(QString ip, uint16_t port, CS104_Connection connection): ipIEC104(ip), portIEC104(port), con(connection)
+ConnectThread::ConnectThread(QString ip, uint16_t port): ipIEC104(ip), portIEC104(port)
 {
 
+}
+
+void ConnectThread::sendCommand(int row, int column, QVariant val)
+{
+    if(column == 1) //если изменилось поле value
+    {
+        if(row == 0)    //Для BitString
+        {
+            InformationObject sc = (InformationObject)  Bitstring32Command_create(NULL, 1, val.toUInt());
+            CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
+            InformationObject_destroy(sc);
+        }
+        if(row == 1)    //Для Word
+        {
+            InformationObject sc = (InformationObject)  SetpointCommandScaled_create(NULL, 3, val.toInt(), false, 0);
+            CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
+            InformationObject_destroy(sc);
+        }
+    }
 }
 
 void ConnectThread::run()
@@ -12,10 +31,10 @@ void ConnectThread::run()
     temp = temp.arg(ipIEC104).arg(portIEC104);
     emit setTextStatus(temp);
 
-//    con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
+    con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
 
-//    CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
-//    CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
+    CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
+    CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
     while (1)
     {
 //        /*Управление кнопками*/
