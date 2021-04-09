@@ -7,8 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    ptr = this;
-    ui->setupUi(this);    
+    ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
@@ -32,7 +31,7 @@ void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
 //        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
 //        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
 
-        ConnectThread *myThread = new ConnectThread(ipIEC104, portIEC104);
+        ConnectThread *myThread = new ConnectThread(ipIEC104, portIEC104, this);
         connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
         connect(this, SIGNAL(sendCom(int, int, QVariant)), myThread, SLOT(sendCommand(int, int, QVariant)));
 

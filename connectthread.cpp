@@ -1,6 +1,6 @@
 #include "connectthread.h"
 
-ConnectThread::ConnectThread(QString ip, uint16_t port): ipIEC104(ip), portIEC104(port)
+ConnectThread::ConnectThread(QString ip, uint16_t port, MainWindow *ptr): ipIEC104(ip), portIEC104(port), ptrWindow(ptr)
 {
 
 }
@@ -33,8 +33,8 @@ void ConnectThread::run()
 
     con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
 
-    CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
-    CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
+    CS104_Connection_setConnectionHandler(con, connectionHandler, ptrWindow);
+    CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, ptrWindow);
     while (1)
     {
 //        /*Управление кнопками*/
