@@ -3,9 +3,9 @@
 #include "CS104Handlers.h"
 
 
-void connectionHandler(void *parameter, CS104_Connection connection, CS104_ConnectionEvent event)
+void ConnectThread::connectionHandler(void *parameter, CS104_Connection connection, CS104_ConnectionEvent event)
 {
-    MainWindow *ptrMainWindow = static_cast<MainWindow *>(parameter); //берем указатель на объект соединения
+    ConnectThread *ptrConnectThread = static_cast<ConnectThread *>(parameter); //берем указатель на объект соединения
 
     switch (event) {
         case CS104_CONNECTION_OPENED:
@@ -23,9 +23,9 @@ void connectionHandler(void *parameter, CS104_Connection connection, CS104_Conne
     }
 }
 
-bool asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //прием данных
+bool ConnectThread::asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //прием данных
 {
-    MainWindow *ptrMainWindow = static_cast<MainWindow *>(parameter); //берем указатель на объект соединения
+    ConnectThread *ptrConnectThread = static_cast<ConnectThread *>(parameter); //берем указатель на объект соединения
 
         if (CS101_ASDU_getTypeID(asdu) == M_ME_TE_1) {  //число тип 35
 
@@ -36,18 +36,8 @@ bool asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //при
                 MeasuredValueScaledWithCP56Time2a io =
                         (MeasuredValueScaledWithCP56Time2a) CS101_ASDU_getElement(asdu, i);
 
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(0, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(0, 1, new QTableWidgetItem(temp));
-                }
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(1, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(1, 1, new QTableWidgetItem(temp));
-                }
+                emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+
                 MeasuredValueScaledWithCP56Time2a_destroy(io);
             }
         }
@@ -60,18 +50,8 @@ bool asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //при
                 SinglePointInformation io =
                         (SinglePointInformation) CS101_ASDU_getElement(asdu, i);
 
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(0, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(0, 1, new QTableWidgetItem(temp));
-                }
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(1, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(1, 1, new QTableWidgetItem(temp));
-                }
+                emit ptrConnectThread->getIEC104Info( InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+
 
                 SinglePointInformation_destroy(io);
             }
@@ -88,18 +68,9 @@ bool asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //при
                 MeasuredValueScaledWithCP56Time2a io =
                         (MeasuredValueScaledWithCP56Time2a) CS101_ASDU_getElement(asdu, i);
 
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(0, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(0, 1, new QTableWidgetItem(temp));
-                }
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(1, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(1, 1, new QTableWidgetItem(temp));
-                }
+                emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+
+
                 MeasuredValueScaledWithCP56Time2a_destroy(io);
             }
         }
@@ -112,18 +83,9 @@ bool asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //при
                 MeasuredValueScaledWithCP56Time2a io =
                         (MeasuredValueScaledWithCP56Time2a) CS101_ASDU_getElement(asdu, i);
 
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(0, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(0, 1, new QTableWidgetItem(temp));
-                }
-                if( InformationObject_getObjectAddress((InformationObject) io) == ptrMainWindow->ui->tableWidget->item(1, 0)->text().toInt())
-                {
-                    QString temp;
-                    temp = QString::number(MeasuredValueScaled_getValue((MeasuredValueScaled) io));
-                    ptrMainWindow->ui->tableWidget->setItem(1, 1, new QTableWidgetItem(temp));
-                }
+                emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+
+
                 MeasuredValueScaledWithCP56Time2a_destroy(io);
             }
         }

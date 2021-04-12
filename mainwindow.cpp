@@ -16,16 +16,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
 {
-        /*Запись значений порта и IP в переменные объекта соединения*/
-        portIEC104 = port;
-        ipIEC104 = ip;
         /*Управление кнопками*/
         ui->pbConnect->setEnabled(false);
         ui->pbDisconnect->setEnabled(true);
 
-        ConnectThread *myThread = new ConnectThread(ipIEC104, portIEC104, this);
+        ConnectThread *myThread = new ConnectThread(ip, port);
         connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
-        connect(this, SIGNAL(sendCom(int, int, QVariant)), myThread, SLOT(sendCommand(int, int, QVariant)));
+        connect(this, SIGNAL(sendCom(int, QVariant, IEC60870_5_TypeID)), myThread, SLOT(sendCommand(int, QVariant, IEC60870_5_TypeID)));
+        connect(myThread, SIGNAL(getIEC104Info(int, int)), this, SLOT(receiveDataIEC104(int, int)));
 
         myThread->start();
 
@@ -55,21 +53,32 @@ void MainWindow::on_pbDisconnect_clicked()  //кнопка "Disconnect"
 
 void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отправка команды по изменению значения в таблице
 {
-    emit sendCom(row, column, ui->tableWidget->item(row, column)->text());
-//    if(column == 1) //если изменилось поле value
-//    {
-//        if(row == 0)    //Для BitString
-//        {
-//            emit sendCom(row, column, ui->tableWidget->item(0, 1)->text().toUInt());
-//        }
-//        if(row == 1)    //Для Word
-//        {
-//            emit sendCom(row, column, ui->tableWidget->item(1, 1)->text().toInt());
-//        }
-//    }
+    if(column == 1) //если изменилось поле value
+    {
+        if(row == 0)    //Для BitString
+        {
+            emit sendCom(1, ui->tableWidget->item(0, 1)->text().toInt(), C_BO_NA_1);
+        }
+        if(row == 1)    //Для Word
+        {
+            emit sendCom(3, ui->tableWidget->item(1, 1)->text().toInt(), C_SE_NB_1);
+        }
+    }
 }
 
 void MainWindow::on_setTextStatus(QString str)
 {
     ui->textEdit->append(str);
+}
+
+void MainWindow::receiveDataIEC104(int addr, int value) //прием данных по IEC104
+{
+    if( addr == ui->tableWidget->item(0, 0)->text().toInt())
+    {
+        ui->tableWidget->setItem(0, 1, new QTableWidgetItem(QString::number(value)));
+    }
+    else if( addr == ui->tableWidget->item(1, 0)->text().toInt())
+    {
+        ui->tableWidget->setItem(1, 1, new QTableWidgetItem(QString::number(value)));
+    }
 }

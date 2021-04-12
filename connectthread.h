@@ -17,18 +17,18 @@ private:
     QString ipIEC104;
     uint16_t portIEC104;
     CS104_Connection con;   //соединение IEC104Master
-    MainWindow *ptrWindow;
 
 public:
-    ConnectThread(QString ip, uint16_t port, MainWindow *ptr);
-    friend void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
-    friend bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
+    ConnectThread(QString ip, uint16_t port);
+    static void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
+    static bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
 
 signals:
     void setTextStatus(QString);    //сигнал для записи статуса соединения
+    void getIEC104Info(int addr, int value);    //сигнал о получении данных
 
 private slots:
-    void sendCommand(int row, int column, QVariant val);
+    void sendCommand(int addr, QVariant val, IEC60870_5_TypeID commandType);
 
 protected:
     void run() override;

@@ -28,10 +28,6 @@ public:
     ~MainWindow();
     void setConnectionIEC104Master(QString ip, uint16_t port);  //создание соединения от мастера
 
-    friend void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
-    friend bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
-
-
 private slots:
     void on_pbConnect_clicked();
 
@@ -41,12 +37,12 @@ private slots:
 
     void on_setTextStatus(QString str);
 
+    void receiveDataIEC104(int addr, int value);
+
 private:
     Ui::MainWindow *ui;
-    QString ipIEC104;
-    uint16_t portIEC104;
 
 signals:
-    void sendCom(int, int, QVariant);
+    void sendCom(int addr, QVariant val, IEC60870_5_TypeID commandType);
 };
 #endif // MAINWINDOW_H

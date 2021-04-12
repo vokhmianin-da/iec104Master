@@ -1,27 +1,31 @@
 #include "connectthread.h"
 
-ConnectThread::ConnectThread(QString ip, uint16_t port, MainWindow *ptr): ipIEC104(ip), portIEC104(port), ptrWindow(ptr)
+ConnectThread::ConnectThread(QString ip, uint16_t port): ipIEC104(ip), portIEC104(port)
 {
 
 }
 
-void ConnectThread::sendCommand(int row, int column, QVariant val)
+void ConnectThread::sendCommand(int addr, QVariant val, IEC60870_5_TypeID commandType)
 {
-    if(column == 1) //если изменилось поле value
+    InformationObject sc;
+    switch(commandType)
     {
-        if(row == 0)    //Для BitString
-        {
-            InformationObject sc = (InformationObject)  Bitstring32Command_create(NULL, 1, val.toUInt());
-            CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
-            InformationObject_destroy(sc);
-        }
-        if(row == 1)    //Для Word
-        {
-            InformationObject sc = (InformationObject)  SetpointCommandScaled_create(NULL, 3, val.toInt(), false, 0);
-            CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
-            InformationObject_destroy(sc);
-        }
+    case C_SC_NA_1: sc = (InformationObject)SingleCommand_create(NULL, addr, val.toBool(), false, 0);
+        break;
+    case C_DC_NA_1: sc = (InformationObject)DoubleCommand_create(NULL, addr, val.toInt(), false, 0);
+        break;
+    case C_SE_NB_1: sc = (InformationObject)SetpointCommandScaled_create(NULL, addr, val.toInt(), false, 0);
+        break;
+    case C_SE_NC_1: sc = (InformationObject)SetpointCommandShort_create(NULL, addr, val.toFloat(), false, 0);
+        break;
+    case C_BO_NA_1: sc = (InformationObject)Bitstring32Command_create(NULL, addr, val.toUInt());
+        break;
+    default: return;
     }
+
+    CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
+    InformationObject_destroy(sc);
+
 }
 
 void ConnectThread::run()
@@ -33,8 +37,8 @@ void ConnectThread::run()
 
     con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
 
-    CS104_Connection_setConnectionHandler(con, connectionHandler, ptrWindow);
-    CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, ptrWindow);
+    CS104_Connection_setConnectionHandler(con, connectionHandler, this);
+    CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, this);
     while (1)
     {
 //        /*Управление кнопками*/
