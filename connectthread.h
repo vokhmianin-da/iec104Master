@@ -4,9 +4,10 @@
 #include <QThread>
 #include <QObject>
 #include <QVariant>
-#include "mainwindow.h"
 
-class MainWindow;
+#include "iec60870/cs104_connection.h"
+#include "iec60870/hal_time.h"
+#include "iec60870/hal_thread.h"
 
 
 class ConnectThread : public QThread
@@ -26,9 +27,11 @@ public:
 signals:
     void setTextStatus(QString);    //сигнал для записи статуса соединения
     void getIEC104Info(int addr, int value);    //сигнал о получении данных
+    void closeConnection(); //сигнал о закрытии текущего соединения
 
 private slots:
     void sendCommand(int addr, QVariant val, IEC60870_5_TypeID commandType);
+    void disconnect();
 
 protected:
     void run() override;

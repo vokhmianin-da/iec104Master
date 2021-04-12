@@ -28,6 +28,15 @@ void ConnectThread::sendCommand(int addr, QVariant val, IEC60870_5_TypeID comman
 
 }
 
+void ConnectThread::disconnect()
+{
+//        CS104_Connection_destroy(con);
+        emit closeConnection();
+//        this->disconnect();
+        this->exit();
+//        this->deleteLater();
+}
+
 void ConnectThread::run()
 {
     QString temp;

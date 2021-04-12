@@ -20,12 +20,14 @@ void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
         ui->pbConnect->setEnabled(false);
         ui->pbDisconnect->setEnabled(true);
 
-        ConnectThread *myThread = new ConnectThread(ip, port);
-        connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
-        connect(this, SIGNAL(sendCom(int, QVariant, IEC60870_5_TypeID)), myThread, SLOT(sendCommand(int, QVariant, IEC60870_5_TypeID)));
-        connect(myThread, SIGNAL(getIEC104Info(int, int)), this, SLOT(receiveDataIEC104(int, int)));
+        connectionThread = new ConnectThread(ip, port);
+        connect(connectionThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
+        connect(this, SIGNAL(sendCom(int, QVariant, IEC60870_5_TypeID)), connectionThread, SLOT(sendCommand(int, QVariant, IEC60870_5_TypeID)));
+        connect(connectionThread, SIGNAL(getIEC104Info(int, int)), this, SLOT(receiveDataIEC104(int, int)));
+        connect(this, SIGNAL(commandCloseConnection()), connectionThread, SLOT(disconnect()));
+        connect(connectionThread, SIGNAL(closeConnection()), this, SLOT(closeConnectionIEC104()));
 
-        myThread->start();
+        connectionThread->start();
 
 
     //Thread_sleep(1000);
@@ -46,9 +48,7 @@ void MainWindow::on_pbDisconnect_clicked()  //кнопка "Disconnect"
     ui->pbConnect->setEnabled(true);
     ui->pbDisconnect->setEnabled(false);
 
-//    /*Закрытие соединения*/
-//    CS104_Connection_destroy(con);
-//    ui->textEdit->append("exit");
+    emit commandCloseConnection();
 }
 
 void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отправка команды по изменению значения в таблице
@@ -81,4 +81,9 @@ void MainWindow::receiveDataIEC104(int addr, int value) //прием данны�
     {
         ui->tableWidget->setItem(1, 1, new QTableWidgetItem(QString::number(value)));
     }
+}
+
+void MainWindow::closeConnectionIEC104()    // Закрытие соединения
+{
+    ui->textEdit->append("exit");
 }

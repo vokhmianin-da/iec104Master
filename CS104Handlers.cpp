@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "CS104Handlers.h"
 
 
 void ConnectThread::connectionHandler(void *parameter, CS104_Connection connection, CS104_ConnectionEvent event)

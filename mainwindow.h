@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "CS104Handlers.h"
 #include "connectthread.h"
 
 QT_BEGIN_NAMESPACE
@@ -37,12 +36,18 @@ private slots:
 
     void on_setTextStatus(QString str);
 
+    /*Прием данных по IEC104*/
     void receiveDataIEC104(int addr, int value);
+
+    /*Закрытие соединения IEC104*/
+    void closeConnectionIEC104();
 
 private:
     Ui::MainWindow *ui;
+    ConnectThread *connectionThread;    //поток для работы с IEC104
 
 signals:
     void sendCom(int addr, QVariant val, IEC60870_5_TypeID commandType);
+    void commandCloseConnection();  //команда о закрытии соединения
 };
 #endif // MAINWINDOW_H
