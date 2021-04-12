@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow *ptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,53 +16,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
 {
-//    do
-//    {
         /*Запись значений порта и IP в переменные объекта соединения*/
         portIEC104 = port;
         ipIEC104 = ip;
         /*Управление кнопками*/
         ui->pbConnect->setEnabled(false);
         ui->pbDisconnect->setEnabled(true);
-        /*Для многопоточности*/
-//        con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
-
-//        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
-//        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
 
         ConnectThread *myThread = new ConnectThread(ipIEC104, portIEC104, this);
         connect(myThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
         connect(this, SIGNAL(sendCom(int, int, QVariant)), myThread, SLOT(sendCommand(int, int, QVariant)));
 
         myThread->start();
-///////////////////////////////////////////////////////////////////
-//        QString temp;
-//        temp = "Connecting to: %1:%2";
-//        temp = temp.arg(ip).arg(port);
-//        ui->textEdit->append(temp);
 
-//        con = CS104_Connection_create(ip.toStdString().c_str(), port);
-
-//        CS104_Connection_setConnectionHandler(con, connectionHandler, NULL);
-//        CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, NULL);
-
-//        if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
-//        {
-//            ui->textEdit->append("Connected!");
-//            CS104_Connection_sendStartDT(con);
-//            CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
-
-//            struct sCP56Time2a testTimestamp;
-//            CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
-//            CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
-//            ui->textEdit->append("Wait ...");
-//            break;
-//        }
-//        else
-//        {
-//            ui->textEdit->append("Connect failed!");
-//        }
-//    } while (1);
 
     //Thread_sleep(1000);
 
@@ -90,17 +55,18 @@ void MainWindow::on_pbDisconnect_clicked()  //кнопка "Disconnect"
 
 void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отправка команды по изменению значения в таблице
 {
-    if(column == 1) //если изменилось поле value
-    {
-        if(row == 0)    //Для BitString
-        {
-            emit sendCom(row, column, ui->tableWidget->item(0, 1)->text().toUInt());
-        }
-        if(row == 1)    //Для Word
-        {
-            emit sendCom(row, column, ui->tableWidget->item(1, 1)->text().toInt());
-        }
-    }
+    emit sendCom(row, column, ui->tableWidget->item(row, column)->text());
+//    if(column == 1) //если изменилось поле value
+//    {
+//        if(row == 0)    //Для BitString
+//        {
+//            emit sendCom(row, column, ui->tableWidget->item(0, 1)->text().toUInt());
+//        }
+//        if(row == 1)    //Для Word
+//        {
+//            emit sendCom(row, column, ui->tableWidget->item(1, 1)->text().toInt());
+//        }
+//    }
 }
 
 void MainWindow::on_setTextStatus(QString str)
