@@ -35,7 +35,7 @@ bool ConnectThread::asduReceivedHandler(void *parameter, int address, CS101_ASDU
                 MeasuredValueScaledWithCP56Time2a io =
                         (MeasuredValueScaledWithCP56Time2a) CS101_ASDU_getElement(asdu, i);
 
-                emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+                if(ptrConnectThread->isConnect()) emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
 
                 MeasuredValueScaledWithCP56Time2a_destroy(io);
             }
@@ -49,7 +49,7 @@ bool ConnectThread::asduReceivedHandler(void *parameter, int address, CS101_ASDU
                 SinglePointInformation io =
                         (SinglePointInformation) CS101_ASDU_getElement(asdu, i);
 
-                emit ptrConnectThread->getIEC104Info( InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+                if(ptrConnectThread->isConnect()) emit ptrConnectThread->getIEC104Info( InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
 
 
                 SinglePointInformation_destroy(io);
@@ -67,7 +67,7 @@ bool ConnectThread::asduReceivedHandler(void *parameter, int address, CS101_ASDU
                 MeasuredValueScaledWithCP56Time2a io =
                         (MeasuredValueScaledWithCP56Time2a) CS101_ASDU_getElement(asdu, i);
 
-                emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+                if(ptrConnectThread->isConnect()) emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
 
 
                 MeasuredValueScaledWithCP56Time2a_destroy(io);
@@ -82,7 +82,7 @@ bool ConnectThread::asduReceivedHandler(void *parameter, int address, CS101_ASDU
                 MeasuredValueScaledWithCP56Time2a io =
                         (MeasuredValueScaledWithCP56Time2a) CS101_ASDU_getElement(asdu, i);
 
-                emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
+                if(ptrConnectThread->isConnect()) emit ptrConnectThread->getIEC104Info(InformationObject_getObjectAddress((InformationObject) io), MeasuredValueScaled_getValue((MeasuredValueScaled) io));
 
 
                 MeasuredValueScaledWithCP56Time2a_destroy(io);

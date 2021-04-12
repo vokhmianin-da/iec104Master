@@ -18,9 +18,11 @@ private:
     QString ipIEC104;
     uint16_t portIEC104;
     CS104_Connection con;   //соединение IEC104Master
+    bool isRun = false;
 
 public:
     ConnectThread(QString ip, uint16_t port);
+    bool isConnect();
     static void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
     static bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
 

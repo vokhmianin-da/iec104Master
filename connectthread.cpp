@@ -5,6 +5,19 @@ ConnectThread::ConnectThread(QString ip, uint16_t port): ipIEC104(ip), portIEC10
 
 }
 
+bool ConnectThread::isConnect()
+{
+    if(con)
+    {
+        if(isRun)
+        {
+            return true;
+        }
+    }
+    else
+        return false;
+}
+
 void ConnectThread::sendCommand(int addr, QVariant val, IEC60870_5_TypeID commandType)
 {
     InformationObject sc;
@@ -30,11 +43,11 @@ void ConnectThread::sendCommand(int addr, QVariant val, IEC60870_5_TypeID comman
 
 void ConnectThread::disconnect()
 {
-//        CS104_Connection_destroy(con);
-        emit closeConnection();
+        CS104_Connection_destroy(con);
+        if (con) emit closeConnection();
 //        this->disconnect();
-        this->exit();
-//        this->deleteLater();
+        this->terminate();
+        this->deleteLater();
 }
 
 void ConnectThread::run()
@@ -56,20 +69,22 @@ void ConnectThread::run()
 
         if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
         {
-            emit setTextStatus("Connected!");
+            isRun = true;
+            if (isConnect()) emit setTextStatus("Connected!");
             CS104_Connection_sendStartDT(con);
             CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
 
             struct sCP56Time2a testTimestamp;
             CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
             CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
-            emit setTextStatus("Wait ...");
+            if (isConnect()) emit setTextStatus("Wait ...");
 //            disconnect(this, SIGNAL(setTextStatus(QString)), sender(), SLOT(on_setTextStatus(QString)));
 //            this->exit();
 //            break;
         }
         else
         {
+            isRun = false;
             emit setTextStatus("Connect failed!");
         }
     }

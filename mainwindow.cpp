@@ -48,7 +48,7 @@ void MainWindow::on_pbDisconnect_clicked()  //кнопка "Disconnect"
     ui->pbConnect->setEnabled(true);
     ui->pbDisconnect->setEnabled(false);
 
-    emit commandCloseConnection();
+    if(connectionThread) emit commandCloseConnection();
 }
 
 void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отправка команды по изменению значения в таблице
@@ -57,11 +57,11 @@ void MainWindow::on_tableWidget_cellChanged(int row, int column)    //отпра
     {
         if(row == 0)    //Для BitString
         {
-            emit sendCom(1, ui->tableWidget->item(0, 1)->text().toInt(), C_BO_NA_1);
+            if(connectionThread) emit sendCom(1, ui->tableWidget->item(0, 1)->text().toInt(), C_BO_NA_1);
         }
         if(row == 1)    //Для Word
         {
-            emit sendCom(3, ui->tableWidget->item(1, 1)->text().toInt(), C_SE_NB_1);
+            if(connectionThread) emit sendCom(3, ui->tableWidget->item(1, 1)->text().toInt(), C_SE_NB_1);
         }
     }
 }
@@ -86,4 +86,10 @@ void MainWindow::receiveDataIEC104(int addr, int value) //прием данны�
 void MainWindow::closeConnectionIEC104()    // Закрытие соединения
 {
     ui->textEdit->append("exit");
+    disconnect(connectionThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
+    disconnect(this, SIGNAL(sendCom(int, QVariant, IEC60870_5_TypeID)), connectionThread, SLOT(sendCommand(int, QVariant, IEC60870_5_TypeID)));
+    disconnect(connectionThread, SIGNAL(getIEC104Info(int, int)), this, SLOT(receiveDataIEC104(int, int)));
+    disconnect(this, SIGNAL(commandCloseConnection()), connectionThread, SLOT(disconnect()));
+    disconnect(connectionThread, SIGNAL(closeConnection()), this, SLOT(closeConnectionIEC104()));
+    connectionThread = nullptr;
 }
