@@ -44,7 +44,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    ConnectThread *connectionThread;    //поток для работы с IEC104
+    ConnectThread *connectionThread = nullptr;    //поток для работы с IEC104
 
 signals:
     void sendCom(int addr, QVariant val, IEC60870_5_TypeID commandType);

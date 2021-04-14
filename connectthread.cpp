@@ -59,7 +59,7 @@ void ConnectThread::run()
     temp = temp.arg(ipIEC104).arg(portIEC104);
     emit setTextStatus(temp);
 
-    con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
+    if(!con) con = CS104_Connection_create(ipIEC104.toStdString().c_str(), portIEC104);
 
     CS104_Connection_setConnectionHandler(con, connectionHandler, this);
     CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, this);

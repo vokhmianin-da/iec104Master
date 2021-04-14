@@ -18,7 +18,7 @@ class ConnectThread : public QThread
 private:
     QString ipIEC104;
     uint16_t portIEC104;
-    CS104_Connection con;   //соединение IEC104Master
+    CS104_Connection con = nullptr;   //соединение IEC104Master
     QQueue <InformationObject> commandQueue;    //очередь команд для отправки по IEC104
     bool isRun = false; //флаг наличия соединения
 
