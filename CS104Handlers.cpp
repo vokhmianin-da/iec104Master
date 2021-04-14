@@ -9,9 +9,11 @@ void ConnectThread::connectionHandler(void *parameter, CS104_Connection connecti
     switch (event) {
         case CS104_CONNECTION_OPENED:
             printf("Connection established\n");
+            ptrConnectThread->isRun = true;
             break;
         case CS104_CONNECTION_CLOSED:
             //emit ptrMainWindow->ui->pbConnect->clicked();
+            ptrConnectThread->isRun = false;
             break;
         case CS104_CONNECTION_STARTDT_CON_RECEIVED:
             printf("Received STARTDT_CON\n");

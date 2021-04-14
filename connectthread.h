@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QObject>
 #include <QVariant>
+#include <QQueue>
 
 #include "iec60870/cs104_connection.h"
 #include "iec60870/hal_time.h"
@@ -18,7 +19,8 @@ private:
     QString ipIEC104;
     uint16_t portIEC104;
     CS104_Connection con;   //соединение IEC104Master
-    bool isRun = false;
+    QQueue <InformationObject> commandQueue;    //очередь команд для отправки по IEC104
+    bool isRun = false; //флаг наличия соединения
 
 public:
     ConnectThread(QString ip, uint16_t port);
@@ -32,11 +34,12 @@ signals:
     void closeConnection(); //сигнал о закрытии текущего соединения
 
 private slots:
-    void sendCommand(int addr, QVariant val, IEC60870_5_TypeID commandType);
+    void commandIOformation(int addr, QVariant val, IEC60870_5_TypeID commandType);
     void disconnect();
 
 protected:
     void run() override;
+    friend class MainWindow;
 };
 
 #endif // CONNECTTHREAD_H

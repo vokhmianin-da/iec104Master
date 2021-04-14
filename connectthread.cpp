@@ -18,7 +18,7 @@ bool ConnectThread::isConnect()
         return false;
 }
 
-void ConnectThread::sendCommand(int addr, QVariant val, IEC60870_5_TypeID commandType)
+void ConnectThread::commandIOformation(int addr, QVariant val, IEC60870_5_TypeID commandType)
 {
     InformationObject sc;
     switch(commandType)
@@ -33,11 +33,13 @@ void ConnectThread::sendCommand(int addr, QVariant val, IEC60870_5_TypeID comman
         break;
     case C_BO_NA_1: sc = (InformationObject)Bitstring32Command_create(NULL, addr, val.toUInt());
         break;
-    default: return;
+    default: sc = nullptr;
     }
 
-    CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
-    InformationObject_destroy(sc);
+    if(sc != nullptr)
+    {
+        commandQueue.enqueue(sc);
+    }
 
 }
 
@@ -63,29 +65,32 @@ void ConnectThread::run()
     CS104_Connection_setASDUReceivedHandler(con, asduReceivedHandler, this);
     while (1)
     {
-//        /*Управление кнопками*/
-//        ui->pbConnect->setEnabled(false);
-//        ui->pbDisconnect->setEnabled(true);
-
-        if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
+        if(!isRun)
         {
-            isRun = true;
-            if (isConnect()) emit setTextStatus("Connected!");
-            CS104_Connection_sendStartDT(con);
-            CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
+            if (CS104_Connection_connect(con))  //здесь посмотреть возможность повторного включения
+            {
+                if (isConnect()) emit setTextStatus("Connected!");
+                CS104_Connection_sendStartDT(con);
+                CS104_Connection_sendInterrogationCommand(con, CS101_COT_ACTIVATION, 1, IEC60870_QOI_STATION);  //общий опрос
 
-            struct sCP56Time2a testTimestamp;
-            CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
-            CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
-            if (isConnect()) emit setTextStatus("Wait ...");
-//            disconnect(this, SIGNAL(setTextStatus(QString)), sender(), SLOT(on_setTextStatus(QString)));
-//            this->exit();
-//            break;
+                struct sCP56Time2a testTimestamp;
+                CP56Time2a_createFromMsTimestamp(&testTimestamp, Hal_getTimeInMs());
+                CS104_Connection_sendTestCommandWithTimestamp(con, 1, 0x4938, &testTimestamp);
+                if (isConnect()) emit setTextStatus("Wait ...");
+            }
+            else
+            {
+                emit setTextStatus("Connect failed!");
+            }
         }
         else
         {
-            isRun = false;
-            emit setTextStatus("Connect failed!");
+            if(!commandQueue.isEmpty())
+            {
+               InformationObject sc = commandQueue.dequeue();
+               CS104_Connection_sendProcessCommandEx(con, CS101_COT_ACTIVATION, 1, sc);
+               InformationObject_destroy(sc);
+            }
         }
     }
 }
