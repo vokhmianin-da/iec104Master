@@ -10,7 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     CS104Handlers.cpp \
-    connectthread.cpp \
+    connectIEC104thread.cpp \
     iec60870/cpXXtime2a.c \
     iec60870/cs101_asdu.c \
     iec60870/cs101_bcr.c \
@@ -30,7 +30,7 @@ LIBS += -lws2_32
 
 HEADERS += \
     CS104Handlers.h \
-    connectthread.h \
+    connectIEC104thread.h \
     iec60870/apl_types_internal.h \
     iec60870/cs101_asdu_internal.h \
     iec60870/cs101_information_objects.h \

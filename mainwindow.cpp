@@ -20,7 +20,7 @@ void MainWindow::setConnectionIEC104Master(QString ip, uint16_t port)
         ui->pbConnect->setEnabled(false);
         ui->pbDisconnect->setEnabled(true);
 
-        if(!connectionThread) connectionThread = new ConnectThread(ip, port);
+        if(!connectionThread) connectionThread = new ConnectIEC104Thread(ip, port);
         connect(connectionThread, SIGNAL(setTextStatus(QString)), this, SLOT(on_setTextStatus(QString)));
         connect(this, SIGNAL(sendCom(int,QVariant,IEC60870_5_TypeID)), connectionThread, SLOT(commandIOformation(int,QVariant,IEC60870_5_TypeID)));
         connect(connectionThread, SIGNAL(getIEC104Info(int,int)), this, SLOT(receiveDataIEC104(int,int)));

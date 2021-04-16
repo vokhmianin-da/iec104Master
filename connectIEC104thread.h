@@ -1,5 +1,5 @@
-#ifndef CONNECTTHREAD_H
-#define CONNECTTHREAD_H
+#ifndef CONNECTIEC104THREAD_H
+#define CONNECTIEC104THREAD_H
 
 #include <QThread>
 #include <QObject>
@@ -11,7 +11,7 @@
 #include "iec60870/hal_thread.h"
 
 
-class ConnectThread : public QThread
+class ConnectIEC104Thread : public QThread
 {
     Q_OBJECT
 
@@ -23,7 +23,7 @@ private:
     bool isRun = false; //флаг наличия соединения
 
 public:
-    ConnectThread(QString ip, uint16_t port);
+    ConnectIEC104Thread(QString ip, uint16_t port);
     bool isConnect();
     static void connectionHandler (void* parameter, CS104_Connection connection, CS104_ConnectionEvent event); /* Connection event handler */
     static bool asduReceivedHandler (void* parameter, int address, CS101_ASDU asdu);   // CS101_ASDUReceivedHandler implementation (For CS104 the address parameter has to be ignored)
@@ -42,4 +42,4 @@ protected:
     friend class MainWindow;
 };
 
-#endif // CONNECTTHREAD_H
+#endif // CONNECTIEC104THREAD_H

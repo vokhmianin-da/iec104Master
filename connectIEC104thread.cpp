@@ -1,11 +1,11 @@
-#include "connectthread.h"
+#include "connectIEC104thread.h"
 
-ConnectThread::ConnectThread(QString ip, uint16_t port): ipIEC104(ip), portIEC104(port)
+ConnectIEC104Thread::ConnectIEC104Thread(QString ip, uint16_t port): ipIEC104(ip), portIEC104(port)
 {
 
 }
 
-bool ConnectThread::isConnect()
+bool ConnectIEC104Thread::isConnect()
 {
     if(con)
     {
@@ -18,7 +18,7 @@ bool ConnectThread::isConnect()
         return false;
 }
 
-void ConnectThread::commandIOformation(int addr, QVariant val, IEC60870_5_TypeID commandType)
+void ConnectIEC104Thread::commandIOformation(int addr, QVariant val, IEC60870_5_TypeID commandType)
 {
     InformationObject sc;
     switch(commandType)
@@ -43,7 +43,7 @@ void ConnectThread::commandIOformation(int addr, QVariant val, IEC60870_5_TypeID
 
 }
 
-void ConnectThread::disconnect()
+void ConnectIEC104Thread::disconnect()
 {
         CS104_Connection_destroy(con);
         if (con) emit closeConnection();
@@ -52,7 +52,7 @@ void ConnectThread::disconnect()
         this->deleteLater();
 }
 
-void ConnectThread::run()
+void ConnectIEC104Thread::run()
 {
     QString temp;
     temp = "Connecting to: %1:%2";

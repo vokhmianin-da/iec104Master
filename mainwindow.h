@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "connectthread.h"
+#include "connectIEC104thread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -44,7 +44,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    ConnectThread *connectionThread = nullptr;    //поток для работы с IEC104
+    ConnectIEC104Thread *connectionThread = nullptr;    //поток для работы с IEC104
 
 signals:
     void sendCom(int addr, QVariant val, IEC60870_5_TypeID commandType);

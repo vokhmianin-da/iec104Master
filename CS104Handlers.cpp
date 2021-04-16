@@ -2,9 +2,9 @@
 #include "ui_mainwindow.h"
 
 
-void ConnectThread::connectionHandler(void *parameter, CS104_Connection connection, CS104_ConnectionEvent event)
+void ConnectIEC104Thread::connectionHandler(void *parameter, CS104_Connection connection, CS104_ConnectionEvent event)
 {
-    ConnectThread *ptrConnectThread = static_cast<ConnectThread *>(parameter); //берем указатель на объект соединения
+    ConnectIEC104Thread *ptrConnectThread = static_cast<ConnectIEC104Thread *>(parameter); //берем указатель на объект соединения
 
     switch (event) {
         case CS104_CONNECTION_OPENED:
@@ -24,9 +24,9 @@ void ConnectThread::connectionHandler(void *parameter, CS104_Connection connecti
     }
 }
 
-bool ConnectThread::asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //прием данных
+bool ConnectIEC104Thread::asduReceivedHandler(void *parameter, int address, CS101_ASDU asdu) //прием данных
 {
-    ConnectThread *ptrConnectThread = static_cast<ConnectThread *>(parameter); //берем указатель на объект соединения
+    ConnectIEC104Thread *ptrConnectThread = static_cast<ConnectIEC104Thread *>(parameter); //берем указатель на объект соединения
 
         if (CS101_ASDU_getTypeID(asdu) == M_ME_TE_1) {  //число тип 35
 
